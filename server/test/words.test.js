@@ -1,30 +1,22 @@
+/*
+ * Tests for the /words endpoint.
+ */
+
 const request = require("supertest");
-const { app: wordApp, initApp } = require("../routes/words");
-const path = require("path");
-const WordListCreator = require("../word_list_creator/word_list_creator");
-let wlc;
+const wordApp = require("../routes/words");
 
 describe("The /words endpoint", () => {
-  beforeAll(async done => {
-    const fileName = path.join(__dirname, "test_word_list.txt");
-    wlc = new WordListCreator();
-    await wlc.loadWordFile(fileName);
-    initApp(wlc);
-    done();
-  });
-
-  test("/words should return a json object with a words property: {words: []}", async done => {
-    const res = await request(wordApp).get("/words");
-    const jsonObject = JSON.parse(res.res.text);
-    expect(jsonObject).toHaveProperty("words");
-    done();
-  });
-
   test("/words should return a json object", async done => {
     await request(wordApp)
       .get("/words")
       .expect("Content-Type", /json/);
 
+    done();
+  });
+  test("/words should return a json object with a words property: {words: []}", async done => {
+    const res = await request(wordApp).get("/words");
+    const jsonObject = JSON.parse(res.res.text);
+    expect(jsonObject).toHaveProperty("words");
     done();
   });
 
@@ -48,6 +40,25 @@ describe("The /words endpoint", () => {
     const res = await request(wordApp).get(`/words?count=${wordCount}`);
     const { words } = JSON.parse(res.res.text);
     expect(words.length).toEqual(wordCount);
+    done();
+  });
+
+  test("/words?count=5&length=5 should return 5 words of length 5", async done => {
+    const res = await request(wordApp).get("/words?count=5&length=5");
+    const jsonObject = JSON.parse(res.res.text);
+    expect(jsonObject).toHaveProperty("count", 5);
+    expect(jsonObject).toHaveProperty("words");
+
+    const { words } = jsonObject;
+
+    words.forEach(word => expect(word.length).toEqual(5));
+    done();
+  });
+
+  test("Passing random string as count (/words?count=abc) should default to a count of 5", async done => {
+    const res = await request(wordApp).get("/words?count=abc");
+    const jsonObject = JSON.parse(res.res.text);
+    expect(jsonObject).toHaveProperty("count", 5);
     done();
   });
 });

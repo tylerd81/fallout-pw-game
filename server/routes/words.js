@@ -1,30 +1,53 @@
+/* words.js - all the route handlers for the /words endpoint */
+
+const path = require("path");
 const express = require("express");
 const app = express();
+const WordListCreator = require("../word_list_creator/word_list_creator");
 
+/* word list used by the server */
 let wordListCreator;
 
-// initApp() is called to pass in the WordListCreator object that will be used
-function initApp(wlc) {
-  wordListCreator = wlc;
-}
+/*
+ * init() creates the WordListCreator object. It is async
+ * because WordListCreator.loadWordFile() is an async operation
+ * and if the server starts up before the word file is read it
+ * will cause errors so we have to wait for it.
+ */
+(async function init() {
+  wordListCreator = new WordListCreator();
+  const wordListFileName = "../data/bigwordlist.txt";
+  const wordFile = path.join(__dirname, wordListFileName);
+
+  try {
+    console.log(`Loading ${wordFile}...`);
+    await wordListCreator.loadWordFile(wordFile);
+    console.log(`Word file ${wordFile} loaded.`);
+  } catch (err) {
+    console.log(`Error loading word file: ${err}`);
+  }
+})();
 
 app.get("/words", (req, res) => {
   const defaultWordCount = 5;
-  const maxLength = 5;
-  const wordCount = req.query.count || defaultWordCount;
+  const defaultWordLength = 5;
+
+  const maxLength = Number.parseInt(req.query.length) || defaultWordLength;
+
+  // if random garbage is passed in the query, set count to the default
+  const wordCount = Number.parseInt(req.query.count) || defaultWordCount;
   const wordList = getWordList(wordCount, maxLength);
 
   const data = {
     count: wordCount,
-    words: wordList,
-    answer: 0
+    words: wordList
   };
 
   res.status(200).json(data);
 });
 
 function getWordList(wordCount, maxLength = 5) {
-  const words = wordListCreator.getWords(wordCount);
+  const words = wordListCreator.getWords(wordCount, maxLength);
   return words;
 }
-module.exports = { app, initApp };
+module.exports = app;
