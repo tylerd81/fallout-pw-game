@@ -1,4 +1,5 @@
 const fs = require("fs");
+const SimpleRandomNumberGenerator = require("./simple_number_generator");
 
 class WordListCreator {
   constructor() {
@@ -54,7 +55,7 @@ class WordListCreator {
   getWords(numWords, wordLength = 5) {
     // words should be sorted by their lengths when the list is first loaded
     // then need to choose unique random numbers.
-    const maxWordLength = 9;
+    const maxWordLength = 10;
     const minWordLength = 4;
 
     if (wordLength < minWordLength || wordLength > maxWordLength) {
@@ -67,6 +68,9 @@ class WordListCreator {
     }
 
     const sortedWordIndices = this.sortedWords.get(wordLength);
+    const numberGenerator = new SimpleRandomNumberGenerator(
+      sortedWordIndices.length
+    );
 
     // if more words are requested than are in the list
     if (numWords > sortedWordIndices.length) {
@@ -75,7 +79,7 @@ class WordListCreator {
 
     const words = [];
     for (let i = 0; i < numWords; i++) {
-      const wordIdx = sortedWordIndices[i];
+      const wordIdx = sortedWordIndices[numberGenerator.nextInt()];
       words.push(this.wordList[wordIdx]);
     }
 

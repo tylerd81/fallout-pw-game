@@ -31,11 +31,16 @@ let wordListCreator;
 app.get("/words", (req, res) => {
   const defaultWordCount = 5;
   const defaultWordLength = 5;
+  const maxWords = 15;
 
   const maxLength = Number.parseInt(req.query.length) || defaultWordLength;
 
   // if random garbage is passed in the query, set count to the default
   const wordCount = Number.parseInt(req.query.count) || defaultWordCount;
+  if (wordCount < 0 || wordCount > maxWords) {
+    wordCount = defaultWordCount;
+  }
+
   const wordList = getWordList(wordCount, maxLength);
 
   const data = {
