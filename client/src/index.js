@@ -10,15 +10,13 @@ passwordCharacters.forEach(pc => {
     if (!pc.classList.contains("password-character-highlight")) {
       pc.classList.add("password-character-highlight");
 
-      // find all the other items with the same dataset.characterId
+      // find all the other items with the same dataset.characterId and
+      // set them to be highlighted
       const otherChars = document.querySelectorAll(
         `[data-character-id = "${id}"]`
       );
       otherChars.forEach(otherPc => {
-        if (
-          otherPc.dataset.characterId === id &&
-          !otherPc.classList.contains("password-character-highlight")
-        ) {
+        if (!otherPc.classList.contains("password-character-highlight")) {
           otherPc.classList.add("password-character-highlight");
         }
       });
@@ -47,6 +45,18 @@ passwordCharacters.forEach(pc => {
   });
 });
 
+// set the output to show the highlighted regular characters
+document.querySelectorAll(".debug-character").forEach(ch => {
+  ch.addEventListener("mouseover", () => setSelectedOutput(ch.innerText));
+});
+
+// set the output to blank when the mouse is moved out of the debug area
+document
+  .querySelector("#debug-data")
+  .addEventListener("mouseout", () => setSelectedOutput(""));
+
+// getPasswordWithId() returns that string that is made up of the characters
+// with the data-character-id attribute set to id
 function getPasswordWithId(id) {
   const pwChars = document.querySelectorAll(`[data-character-id = "${id}"]`);
   const pw = Array.from(pwChars).map(char => char.innerText);
