@@ -1,35 +1,52 @@
+:root {
+  --terminal-background: black;
+  --terminal-foreground: #3dc43d;
+}
 * {
   box-sizing: border-box;
   margin: 0;
 }
 
-#debug-data {
+body {
   font-family: monospace;
+  font-size: 18px;
+  font-weight: bold;
+}
+.debug-data {
   font-size: 0;
-  background-color: black;
-  color: #3dc43d;
+  background-color: var(--terminal-background);
+  color: var(--terminal-foreground);
+  text-shadow: 0px 0px 4px #3dc43d;
+  cursor: pointer;
 }
 
 .debug-character {
   font-size: 1rem;
   display: inline-block;
   margin: 0;
-  padding: 0.25rem;
+  padding: 0.15rem;
 }
 
 .password-character {
   font-size: 1rem;
   display: inline-block;
   margin: 0;
-  padding: 0.25rem;
+  padding: 0.15rem;
 }
 
 .password-character-highlight {
-  background-color: #3dc43d;
-  color: black;
+  background-color: var(--terminal-foreground);
+  color: var(--terminal-background);
 }
 
 .debug-character:hover {
-  background-color: #3dc43d;
-  color: black;
+  background-color: var(--terminal-foreground);
+  color: var(--terminal-background);
+}
+
+#selected-output {
+  background-color: var(--terminal-background);
+  color: var(--terminal-foreground);
+  text-shadow: 0px 0px 4px #3dc43d;
+  height: 1.5rem;
 }
