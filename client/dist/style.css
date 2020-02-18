@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#debug-data {
+  font-family: monospace;
+  font-size: 0;
+  background-color: black;
+  color: #3dc43d;
+}
+
+.debug-character {
+  font-size: 1rem;
+  display: inline-block;
+  margin: 0;
+  padding: 0.25rem;
+}
+
+.password-character {
+  font-size: 1rem;
+  display: inline-block;
+  margin: 0;
+  padding: 0.25rem;
+}
+
+.password-character-highlight {
+  background-color: #3dc43d;
+  color: black;
+}
+
+.debug-character:hover {
+  background-color: #3dc43d;
+  color: black;
+}
