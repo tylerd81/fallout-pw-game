@@ -4,6 +4,7 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const WordListCreator = require("../word_list_creator/word_list_creator");
+const cors = require('cors');
 
 /* word list used by the server */
 let wordListCreator;
@@ -27,6 +28,8 @@ let wordListCreator;
     console.log(`Error loading word file: ${err}`);
   }
 })();
+
+app.use(cors());
 
 app.get("/words", (req, res) => {
   const defaultWordCount = 5;

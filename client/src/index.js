@@ -1,154 +1,81 @@
-function createHandlers() {
-  const passwordCharacters = document.querySelectorAll(".password-character");
+import {
+  createDebugDataDisplay,
+  createHandlers,
+  getPasswordWithId,
+  setSelectedOutput,
+  specialChars
+} from "./password_game";
 
-  // each character that makes up a possible password will have the class
-  // "password-character". The possible password will also have a data
-  // attribute called "data-character-id" set. Each character that makes
-  // up a single password will all have the same id set.
-
-  // All other characters (the random garbage characters) will have the
-  // class "debug-character".
-
-  // when a password character is moused over, highlight all the other
-  // password characters that have the same data-character-id attribute
-  // value.
-
-  // set the mouse over handler for each element with the class of
-  // "password-character"
-  passwordCharacters.forEach(pc => {
-    pc.addEventListener("mouseover", () => {
-      const id = pc.dataset.characterId;
-
-      if (!pc.classList.contains("password-character-highlight")) {
-        pc.classList.add("password-character-highlight");
-
-        // find all the other items with the same dataset.characterId and
-        // set them to be highlighted
-        const otherChars = document.querySelectorAll(
-          `[data-character-id = "${id}"]`
-        );
-        otherChars.forEach(otherPc => {
-          if (!otherPc.classList.contains("password-character-highlight")) {
-            otherPc.classList.add("password-character-highlight");
-          }
-        });
-      }
-
-      // also set the output to display the password
-      setSelectedOutput(getPasswordWithId(id));
-    });
-
-    // remove the password-character-highlight class from the elements
-    // that have the same data-character-id value when the mouse moves
-    // off of them.
-    pc.addEventListener("mouseout", () => {
-      if (pc.classList.contains("password-character-highlight")) {
-        pc.classList.remove("password-character-highlight");
-
-        const id = pc.dataset.characterId;
-        const otherChars = document.querySelectorAll(
-          `[data-character-id = "${id}"]`
-        );
-        otherChars.forEach(otherPc => {
-          if (otherPc.classList.contains("password-character-highlight")) {
-            otherPc.classList.remove("password-character-highlight");
-          }
-        });
-      }
-    });
-  });
-
-  // set the output to show the highlighted regular characters when
-  // they are moused over.
-  document.querySelectorAll(".debug-character").forEach(ch => {
-    ch.addEventListener("mouseover", () => setSelectedOutput(ch.innerText));
-  });
-}
-
-// getPasswordWithId() returns the string that is made up of the characters
-// with the data-character-id attribute set to id
-function getPasswordWithId(id) {
-  const pwChars = document.querySelectorAll(`[data-character-id = "${id}"]`);
-  const pw = Array.from(pwChars).map(char => char.innerText); // Array.from() might not be needed
-  return pw.join("");
-}
-
-function setSelectedOutput(word) {
-  document.querySelector("#current-output").innerText = word;
-}
-
-function addPasswordCharacter(
-  parent,
-  ch,
-  id,
-  className = "password-character"
-) {
-  const el = document.createElement("span");
-  el.classList.add(className);
-  el.innerText = ch;
-  el.dataset.characterId = id;
-  parent.appendChild(el);
-}
-
-function addGarbageCharacter(parent, ch, className = "debug-character") {
-  const el = document.createElement("span");
-  el.classList.add(className);
-  el.innerText = ch;
-  parent.appendChild(el);
-}
-
-function createRow() {
-  const row = document.createElement("div");
-  row.classList.add("debug-data-row");
-  console.log(row);
-  return row;
-}
-
-let passwordId = 0;
-
-function createDebugDataDisplay(rootContainer, numRows, numCols, memoryData) {
-  const specialChars = "~!@#$%^&*()[]{}:;'\".<>|\\/-+=";
-
-  if (numRows * numCols > memoryData.split("").length) {
-    throw `Memory size too small: ${numRows * numCols} > ${memoryData.length}`;
+function createMemoryDump(wordList, numRows, numCols) {
+  const wordLength = wordList.reduce((total, word) => total + word.length, 0);
+  if (wordLength > numRows * numCols) {
+    throw "There are more words than would fit into the number of rows x cols";
   }
-  let currChar = 0;
-  let inPassword = false;
 
-  for (let row = 0; row < numRows; row++) {
-    const rowElement = createRow();
+  const mem = [];
 
-    for (let i = 0; i < numCols; i++) {
-      const ch = memoryData[currChar];
-      if (specialChars.includes(ch)) {
-        if (inPassword) {
-          inPassword = false;
-          passwordId++;
+  for (let i = 0; i < numRows * numCols; i++) {
+    mem.push(specialChars[Math.floor(Math.random() * specialChars.length)]);
+  }
+
+  // randomly place the words
+  wordList.forEach(word => {
+    let placed = false;
+
+    while (!placed) {
+      let start = Math.floor(Math.random() * numRows * numCols);
+      let freeSpots = 0;
+      for (let i = 0; i < word.length && start + i < mem.length; i++) {
+        if (!specialChars.includes(mem[start + i])) {
+          break; // password is already here
+        } else {
+          freeSpots++;
         }
-        addGarbageCharacter(rowElement, ch);
-      } else {
-        if (!inPassword) {
-          inPassword = true;
-        }
-        addPasswordCharacter(rowElement, ch, passwordId);
       }
-      currChar++;
+      if (freeSpots === word.length) {
+        mem.splice(start, word.length, ...word.toUpperCase().split(""));
+        placed = true;
+      }
     }
-    rootContainer.appendChild(rowElement);
-  }
+  });
+  return mem.join("");
 }
 
-function init() {
-  const mainContainer = document.getElementById("debug-area-1");
-  const mem = "SARGE%$^!CAT&*(GREEN^%*&%";
-  createDebugDataDisplay(mainContainer, 5, 5, mem);
+async function loadWords() {
+  // use fetch to load the acual words from the api here
+  // return Promise.resolve(["dog", "cat", "bat", "rat", "hat"]);
+  const apiUrl = "http://localhost:8000/words";
 
-  const secondContainer = document.getElementById("debug-area-2");
-  createDebugDataDisplay(secondContainer, 5, 5, mem);
-  // set the handler for when a password item is clicked
+  const response = await fetch(apiUrl);
+  const jsonWords = await response.json();
+  console.log(jsonWords);
+  return ["dog", "cat", "bat", "rat", "hat"];
+}
+
+async function init() {
+  const numRows = 20;
+  const numCols = 20;
+  const words = await loadWords();
+  const mainContainer = document.getElementById("debug-area-1");
+  // const mem = "SARGE%$^!CAT&*(GREEN^%*&%";
+  const mem = createMemoryDump(words, numRows, numCols);
+  createDebugDataDisplay(mainContainer, numRows, numCols, mem);
+
+  // const secondContainer = document.getElementById("debug-area-2");
+  // createDebugDataDisplay(secondContainer, 5, 5, mem);
 
   // createHandlers() must be called after all the DOM elements are created
   createHandlers();
+
+  //Click handler for when a password is clicked.
+  document
+    .querySelectorAll(".password-character")
+    .forEach(pc =>
+      pc.addEventListener("click", () =>
+        console.log(getPasswordWithId(pc.dataset.characterId))
+      )
+    );
+
   // set the output to blank when the mouse is moved out of the debug area
   document.querySelectorAll(".debug-data").forEach(dd => {
     dd.addEventListener("mouseout", () => setSelectedOutput(""));
