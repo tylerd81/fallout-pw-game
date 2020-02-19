@@ -11,6 +11,22 @@ body {
   font-family: monospace;
   font-size: 18px;
   font-weight: bold;
+  background-color: black;
+}
+
+.logo {
+  color: var(--terminal-foreground);
+  text-shadow: 0px 0px 4px var(--terminal-foreground);
+  text-align: center;
+}
+
+#main-container {
+  width: 650px;
+  margin: 1rem auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 2fr;
+  border: solid 2px var(--terminal-foreground);
+  padding: 1rem;
 }
 .debug-data {
   font-size: 0;
@@ -20,6 +36,10 @@ body {
   cursor: pointer;
 }
 
+.debug-data-row {
+  /* border: solid 1px red; */
+  margin: 0;
+}
 .debug-character {
   font-size: 1rem;
   display: inline-block;
@@ -32,9 +52,10 @@ body {
   display: inline-block;
   margin: 0;
   padding: 0.15rem;
-  animation-name: shimmer;
+  /* animation-name: shimmer;
   animation-duration: 1s;
-  animation-iteration-count: infinite;
+  animation-iteration-count: infinite; */
+  text-shadow: 0px 0px 5px #1bda1b;
 }
 
 @keyframes shimmer {
@@ -64,4 +85,79 @@ body {
   color: var(--terminal-foreground);
   text-shadow: 0px 0px 4px #3dc43d;
   height: 1.5rem;
+  /* display: inline-block; */
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+#status-message {
+  background-color: var(--terminal-background);
+  color: var(--terminal-foreground);
+  text-shadow: 0px 0px 4px #3dc43d;
+  height: 2rem;
+  /* display: inline-block; */
+  grid-column-start: 1;
+  grid-column-end: 5;
+  padding: 0.25rem;
+  border: solid 1px #288528;
+}
+
+#attempt-container {
+  background-color: var(--terminal-background);
+  color: var(--terminal-foreground);
+  text-shadow: 0px 0px 4px #3dc43d;
+  height: 2rem;
+  /* display: inline-block; */
+  grid-column-start: 1;
+  grid-column-end: 5;
+  padding: 0.25rem;
+  /* border: solid 1px #288528; */
+  margin-top: 1rem;
+}
+
+#access-granted {
+  border: solid 2px var(--terminal-foreground);
+  width: 500px;
+  background-color: var(--terminal-foreground);
+  color: black;
+  text-shadow: 0px 0px 2px black;
+  box-shadow: 0px 0px 5px var(--terminal-foreground);
+  text-align: center;
+  padding: 2rem;
+  z-index: 2;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+}
+
+#access-denied {
+  border: solid 2px red;
+  width: 500px;
+  background-color: red;
+  color: black;
+  text-shadow: 0px 0px 2px black;
+  box-shadow: 0px 0px 5px red;
+  text-align: center;
+  padding: 2rem;
+  z-index: 2;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+}
+.memory-address {
+  background-color: var(--terminal-background);
+  color: #288528;
+  text-shadow: 0px 0px 4px #288528;
+}
+
+ul {
+  list-style-type: none;
+}
+li {
+  font-size: 1rem;
+  padding: 0.15rem;
 }

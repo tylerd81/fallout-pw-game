@@ -3,102 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Password Game</title>
+    <title>Fallout Password Game</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Password Game</h1>
-    <div class="debug-data" id="debug-area-1">
-      <!-- <div class="debug-data-row"> -->
-      <!-- <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">></span>
-        <span class="debug-character">?</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-      </div>
+    <h1 class="logo">Fallout Style Password Game</h1>
+    <div id="main-container">
+      <div class="memory-address" id="mem-display-1"></div>
+      <div class="debug-data" id="debug-area-1"></div>
 
-      <div class="debug-data-row">
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">&</span>
-        <span class="password-character" data-character-id="1">S</span>
-        <span class="password-character" data-character-id="1">A</span>
-        <span class="password-character" data-character-id="1">R</span>
-      </div>
+      <div class="memory-address" id="mem-display-2"></div>
+      <div class="debug-data" id="debug-area-2"></div>
 
-      <div class="debug-data-row">
-        <span class="password-character" data-character-id="1">G</span>
-        <span class="password-character" data-character-id="1">E</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="password-character" data-character-id="0">C</span>
-        <span class="password-character" data-character-id="0">A</span>
-        <span class="password-character" data-character-id="0">T</span>
-        <span class="debug-character">&</span>
-      </div>
-      <div class="debug-data-row">
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">></span>
-        <span class="debug-character">?</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-      </div>
-      <div class="debug-data-row">
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">></span>
-        <span class="debug-character">?</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-      </div>
-      <div class="debug-data-row">
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">></span>
-        <span class="debug-character">?</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-      </div>
-      <div class="debug-data-row">
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">></span>
-        <span class="debug-character">?</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-      </div>
-      <div class="debug-data-row">
-        <span class="debug-character">-</span>
-        <span class="debug-character">|</span>
-        <span class="debug-character">></span>
-        <span class="debug-character">?</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">$</span>
-        <span class="debug-character">%</span>
-        <span class="debug-character">&</span>
-      </div> -->
+      <div id="selected-output">> <span id="current-output"></span></div>
+      <div id="status-message"></div>
+      <div id="attempt-container">****</div>
     </div>
-
-    <div class="debug-data" id="debug-area-2"></div>
-    <div id="selected-output">
-      <span id="current-output"></span>
+    <div id="access-granted">ACCESS GRANTED</div>
+    <div id="access-denied">
+      ACCESS DENIED PLEASE REPORT TO THE NEAREST AUTHORITIES
     </div>
     <script src="http://localhost:8080/dist/js/main.bundle.js"></script>
   </body>

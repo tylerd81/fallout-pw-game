@@ -4,7 +4,7 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const WordListCreator = require("../word_list_creator/word_list_creator");
-const cors = require('cors');
+const cors = require("cors");
 
 /* word list used by the server */
 let wordListCreator;
@@ -34,12 +34,12 @@ app.use(cors());
 app.get("/words", (req, res) => {
   const defaultWordCount = 5;
   const defaultWordLength = 5;
-  const maxWords = 15;
+  const maxWords = 20;
 
   const maxLength = Number.parseInt(req.query.length) || defaultWordLength;
 
   // if random garbage is passed in the query, set count to the default
-  const wordCount = Number.parseInt(req.query.count) || defaultWordCount;
+  let wordCount = Number.parseInt(req.query.count) || defaultWordCount;
   if (wordCount < 0 || wordCount > maxWords) {
     wordCount = defaultWordCount;
   }

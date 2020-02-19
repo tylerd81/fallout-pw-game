@@ -79,6 +79,10 @@ export function setSelectedOutput(word) {
   document.querySelector("#current-output").innerText = word;
 }
 
+export function setStatusMessage(word) {
+  document.querySelector("#status-message").innerText = word;
+}
+
 function addPasswordCharacter(
   parent,
   ch,
