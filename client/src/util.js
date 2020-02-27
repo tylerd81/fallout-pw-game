@@ -1,5 +1,13 @@
 export const specialChars = "~!@#$%^&*()[]{}:;'\".<>|\\/-+=";
 
+export function removeAllElements(element) {
+  // console.log(element);
+  // while (element.firstChild) {
+  //   element.removeChild(element.firstChild);
+  // }
+  element.innerHTML = "";
+}
+
 export function toHex(num) {
   let hex = num.toString(16);
   const minLength = 4;

@@ -1,5 +1,10 @@
 import { createHandlers } from "./password_game";
-import { computeLikeness, createMemoryDump, getPasswordWithId } from "./util";
+import {
+  computeLikeness,
+  createMemoryDump,
+  getPasswordWithId,
+  removeAllElements
+} from "./util";
 import { loadWords } from "./server";
 import {
   setSelectedOutput,
@@ -8,89 +13,142 @@ import {
   showAttemptsLeft,
   setStatusMessage,
   showAccessDenied,
-  showAccessGranted
+  showAccessGranted,
+  hideAccessDenied,
+  hideAccessGranted
 } from "./ui";
 
-async function init() {
-  const numRows = 16;
-  const numCols = 12;
-  const numWords = 18; // should be multiple of 2
-  const wordLength = 8;
+const gameSettings = {
+  numRows: 16,
+  numCols: 12,
+  numWords: 18,
+  wordLength: 8,
+  wordList: [],
+  correctPassword: "",
+  attempts: 4,
+  gameOver: false
+};
 
-  let correctPassword;
-  let words;
+function dumpGameSettings() {
+  console.log(gameSettings);
+}
 
-  // load the words from the API
-  try {
-    words = await loadWords(numWords, wordLength);
-  } catch (e) {
-    setSelectedOutput(e.message);
-    return;
+function loadUi() {
+  const { numWords, wordList, numRows, numCols } = gameSettings;
+  if (wordList.length === 0) {
+    throw "Word list is 0, word list must be loaded first.";
   }
 
   // setup memory displays next to memory dumps
+
   const memoryDisplay1 = document.getElementById("mem-display-1");
   const memoryDisplay2 = document.getElementById("mem-display-2");
+  console.log(memoryDisplay1.firstChild);
+  console.assert(memoryDisplay1.firstChild === null);
+  console.assert(memoryDisplay2.firstChild === null);
 
   showMemoryAddresses(memoryDisplay1, 0, numCols, numRows);
   showMemoryAddresses(memoryDisplay2, numRows * 12, numCols, numRows);
 
   // cut the words array in half
-  const wordsArea1 = words.slice(0, Math.floor(numWords / 2));
-  const wordsArea2 = words.slice(Math.floor(numWords / 2));
+  const wordsArea1 = wordList.slice(0, Math.floor(numWords / 2));
+  const wordsArea2 = wordList.slice(Math.floor(numWords / 2));
 
-  // choose a random correct password
-  correctPassword = words[Math.floor(Math.random() * words.length)];
-  console.log(correctPassword);
-
-  // display first memory dump
-  const mainContainer = document.getElementById("debug-area-1");
+  // display the "memory dumps"
   const mem1 = createMemoryDump(wordsArea1, numRows, numCols);
-  createDebugDataDisplay(mainContainer, numRows, numCols, mem1);
-
-  // display second memory dump
-  const secondContainer = document.getElementById("debug-area-2");
   const mem2 = createMemoryDump(wordsArea2, numRows, numCols);
+
+  // get the containers and display the dumps
+  const mainContainer = document.getElementById("debug-area-1");
+  const secondContainer = document.getElementById("debug-area-2");
+
+  createDebugDataDisplay(mainContainer, numRows, numCols, mem1);
   createDebugDataDisplay(secondContainer, numRows, numCols, mem2);
-
-  // createHandlers() must be called after all the DOM elements are created
-  createHandlers();
-
-  let attempts = 4;
-  let gameOver = false;
-
-  showAttemptsLeft(attempts);
-
-  //Click handler for when a password is clicked.
-  document.querySelectorAll(".password-character").forEach(pc =>
-    pc.addEventListener("click", () => {
-      if (gameOver) {
-        return;
-      }
-
-      const guess = getPasswordWithId(pc.dataset.characterId);
-
-      if (guess.toLowerCase() === correctPassword) {
-        setStatusMessage("PASSWORD ACCEPTED");
-        gameOver = true;
-        showAccessGranted();
-      } else {
-        const likeness = computeLikeness(guess.toLowerCase(), correctPassword);
-        setStatusMessage(`INVALID PASSWORD ${guess}: Likeness=${likeness}`);
-        attempts--;
-        if (attempts === 0) {
-          showAccessDenied();
-          gameOver = true;
-        }
-        showAttemptsLeft(attempts);
-      }
-    })
-  );
-
-  // set the output to blank when the mouse is moved out of the debug area
-  document.querySelectorAll(".debug-data").forEach(dd => {
-    dd.addEventListener("mouseout", () => setSelectedOutput(""));
-  });
 }
 
-init();
+function passwordChecker(passwordChar) {
+  console.log("pw checker");
+  const pc = passwordChar;
+  if (gameSettings.gameOver) {
+    return;
+  }
+
+  const guess = getPasswordWithId(pc.dataset.characterId);
+
+  if (guess.toLowerCase() === gameSettings.correctPassword) {
+    setStatusMessage("PASSWORD ACCEPTED");
+    gameSettings.gameOver = true;
+    showAccessGranted();
+  } else {
+    const likeness = computeLikeness(
+      guess.toLowerCase(),
+      gameSettings.correctPassword
+    );
+    setStatusMessage(`INVALID PASSWORD ${guess}: Likeness=${likeness}`);
+    gameSettings.attempts--;
+    if (gameSettings.attempts === 0) {
+      showAccessDenied();
+      gameSettings.gameOver = true;
+    }
+    showAttemptsLeft(gameSettings.attempts);
+  }
+}
+
+async function startGame() {
+  console.log("Start");
+  const { numWords, wordLength } = gameSettings;
+
+  // load the words from the API
+  try {
+    gameSettings.wordList = await loadWords(numWords, wordLength);
+  } catch (e) {
+    setSelectedOutput(e.message);
+    return;
+  }
+
+  // choose a random correct password
+  const { wordList } = gameSettings;
+  gameSettings.correctPassword =
+    wordList[Math.floor(Math.random() * wordList.length)];
+
+  loadUi();
+  dumpGameSettings();
+
+  showAttemptsLeft(gameSettings.attempts);
+
+  // createHandlers() must be called after all the DOM elements
+  // are created by loadUi()
+  createHandlers(passwordChecker);
+}
+
+// set handler for when reset button is clicked. Have to make sure this is
+// only set once else multiple handlers will be set and reset will be called
+// multiple times.
+
+document.querySelector("#reset-button").addEventListener("click", () => {
+  resetGame();
+});
+
+function resetGame() {
+  const memDisplay1 = document.querySelector("#mem-display-1");
+  const memDisplay2 = document.querySelector("#mem-display-2");
+  const debugDisplay1 = document.querySelector("#debug-area-1");
+  const debugDisplay2 = document.querySelector("#debug-area-2");
+  hideAccessDenied();
+  hideAccessGranted();
+
+  removeAllElements(memDisplay1);
+  removeAllElements(memDisplay2);
+  removeAllElements(debugDisplay1);
+  removeAllElements(debugDisplay2);
+
+  gameSettings.gameOver = false;
+  gameSettings.wordList = [];
+  gameSettings.attempts = 4;
+
+  setSelectedOutput("");
+  showAttemptsLeft(gameSettings.attempts);
+
+  startGame();
+}
+startGame();

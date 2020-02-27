@@ -1,4 +1,4 @@
-import { toHex, specialChars } from "./util";
+import { emptyElement, toHex, specialChars } from "./util";
 
 export function setSelectedOutput(word) {
   document.querySelector("#current-output").innerText = word;
@@ -11,9 +11,15 @@ export function setStatusMessage(word) {
 export function showAccessGranted() {
   document.getElementById("access-granted").style.display = "block";
 }
+export function hideAccessGranted() {
+  document.getElementById("access-granted").style.display = "none";
+}
 
 export function showAccessDenied() {
   document.getElementById("access-denied").style.display = "block";
+}
+export function hideAccessDenied() {
+  document.getElementById("access-denied").style.display = "none";
 }
 
 export function showAttemptsLeft(num) {
@@ -78,6 +84,9 @@ function createRow() {
 // that the dataset.chararacterId is set correctly for matching passwords.
 let passwordId = 0;
 
+// createDebugDataDisplay() creates the actual html elements that display
+// the memory dumps. It creates the dump based on the memoryData array
+// that is passed in (the array returned from createMemoryDump()).
 export function createDebugDataDisplay(
   rootContainer,
   numRows,
@@ -87,6 +96,7 @@ export function createDebugDataDisplay(
   if (numRows * numCols > memoryData.split("").length) {
     throw `Memory size too small: ${numRows * numCols} > ${memoryData.length}`;
   }
+
   let currChar = 0;
   let inPassword = false; // keep track of when we are inserting password characters
 
