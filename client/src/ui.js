@@ -93,7 +93,7 @@ export function createDebugDataDisplay(
   numCols,
   memoryData
 ) {
-  if (numRows * numCols > memoryData.split("").length) {
+  if (numRows * numCols > memoryData.length) {
     throw `Memory size too small: ${numRows * numCols} > ${memoryData.length}`;
   }
 

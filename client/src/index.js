@@ -151,6 +151,7 @@ function resetGame() {
   gameSettings.attempts = 4;
 
   setSelectedOutput("");
+  setStatusMessage("");
   showAttemptsLeft(gameSettings.attempts);
 
   startGame();

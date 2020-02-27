@@ -1,11 +1,9 @@
 export const specialChars = "~!@#$%^&*()[]{}:;'\".<>|\\/-+=";
 
 export function removeAllElements(element) {
-  // console.log(element);
-  // while (element.firstChild) {
-  //   element.removeChild(element.firstChild);
-  // }
-  element.innerHTML = "";
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
 }
 
 export function toHex(num) {
@@ -42,7 +40,7 @@ export function getPasswordWithId(id) {
   return pw.join("");
 }
 
-// createMemoryDump() cretes an array and adds all the garbage characters
+// createMemoryDump() creates an array and adds all the garbage characters
 // and the words to the array. This array is then used to display the
 // "memory dump" for the game containing the garbage characters and
 // the possible passwords.
@@ -89,5 +87,5 @@ export function createMemoryDump(wordList, numRows, numCols) {
       }
     }
   });
-  return mem.join("");
+  return mem;
 }

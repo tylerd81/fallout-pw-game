@@ -59,6 +59,11 @@ body {
   text-shadow: 0px 0px 5px #1bda1b;
 }
 
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  grid-column: 1/5;
+}
 .reset-button {
   border: solid 2px red;
   background-color: black;
