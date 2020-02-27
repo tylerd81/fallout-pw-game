@@ -59,6 +59,21 @@ body {
   text-shadow: 0px 0px 5px #1bda1b;
 }
 
+.reset-button {
+  border: solid 2px red;
+  background-color: black;
+  color: red;
+  font-family: inherit;
+  padding: 0.25rem 1rem;
+  box-shadow: 1px 1px 4px red, -1px -1px 4px red;
+  text-shadow: 1px 1px 4px red;
+}
+
+.reset-button:active {
+  background-color: red;
+  color: black;
+}
+
 @keyframes shimmer {
   from {
     text-shadow: 0px 0px 4px var(--terminal-foreground);

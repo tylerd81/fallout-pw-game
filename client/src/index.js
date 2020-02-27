@@ -79,6 +79,10 @@ function passwordChecker(passwordChar) {
     setStatusMessage("PASSWORD ACCEPTED");
     gameSettings.gameOver = true;
     showAccessGranted();
+    setTimeout(() => {
+      hideAccessGranted();
+      resetGame();
+    }, 4000);
   } else {
     const likeness = computeLikeness(
       guess.toLowerCase(),
