@@ -1,3 +1,5 @@
+import { setSelectedOutput } from "./ui";
+import { getPasswordWithId } from "./util";
 export const specialChars = "~!@#$%^&*()[]{}:;'\".<>|\\/-+=";
 
 export function createHandlers() {
@@ -65,83 +67,4 @@ export function createHandlers() {
   document.querySelectorAll(".debug-character").forEach(ch => {
     ch.addEventListener("mouseover", () => setSelectedOutput(ch.innerText));
   });
-}
-
-// getPasswordWithId() returns the string that is made up of the characters
-// with the data-character-id attribute set to id
-export function getPasswordWithId(id) {
-  const pwChars = document.querySelectorAll(`[data-character-id = "${id}"]`);
-  const pw = Array.from(pwChars).map(char => char.innerText); // Array.from() might not be needed
-  return pw.join("");
-}
-
-export function setSelectedOutput(word) {
-  document.querySelector("#current-output").innerText = word;
-}
-
-export function setStatusMessage(word) {
-  document.querySelector("#status-message").innerText = word;
-}
-
-function addPasswordCharacter(
-  parent,
-  ch,
-  id,
-  className = "password-character"
-) {
-  const el = document.createElement("span");
-  el.classList.add(className);
-  el.innerText = ch;
-  el.dataset.characterId = id;
-  parent.appendChild(el);
-}
-
-function addGarbageCharacter(parent, ch, className = "debug-character") {
-  const el = document.createElement("span");
-  el.classList.add(className);
-  el.innerText = ch;
-  parent.appendChild(el);
-}
-
-function createRow() {
-  const row = document.createElement("div");
-  row.classList.add("debug-data-row");
-  return row;
-}
-
-let passwordId = 0;
-
-export function createDebugDataDisplay(
-  rootContainer,
-  numRows,
-  numCols,
-  memoryData
-) {
-  if (numRows * numCols > memoryData.split("").length) {
-    throw `Memory size too small: ${numRows * numCols} > ${memoryData.length}`;
-  }
-  let currChar = 0;
-  let inPassword = false; // keep track of when we are inserting password characters
-
-  for (let row = 0; row < numRows; row++) {
-    const rowElement = createRow();
-
-    for (let i = 0; i < numCols; i++) {
-      const ch = memoryData[currChar];
-      if (specialChars.includes(ch)) {
-        if (inPassword) {
-          inPassword = false;
-          passwordId++;
-        }
-        addGarbageCharacter(rowElement, ch);
-      } else {
-        if (!inPassword) {
-          inPassword = true;
-        }
-        addPasswordCharacter(rowElement, ch, passwordId);
-      }
-      currChar++;
-    }
-    rootContainer.appendChild(rowElement);
-  }
 }

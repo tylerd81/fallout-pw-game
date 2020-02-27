@@ -29,9 +29,12 @@ let wordListCreator;
   }
 })();
 
-app.use(cors());
+// app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:8080"
+};
 
-app.get("/words", (req, res) => {
+app.get("/words", cors(corsOptions), (req, res) => {
   const defaultWordCount = 5;
   const defaultWordLength = 5;
   const maxWords = 20;

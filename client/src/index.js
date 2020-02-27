@@ -1,123 +1,15 @@
+import { createHandlers } from "./password_game";
+import { computeLikeness, createMemoryDump, getPasswordWithId } from "./util";
+import { loadWords } from "./server";
 import {
-  createDebugDataDisplay,
-  createHandlers,
-  getPasswordWithId,
   setSelectedOutput,
-  specialChars,
-  setStatusMessage
-} from "./password_game";
-
-function toHex(num) {
-  let hex = num.toString(16);
-  const minLength = 4;
-
-  while (hex.length < minLength) {
-    hex = "0" + hex;
-  }
-  return "0x" + hex;
-}
-
-function computeLikeness(word1, word2) {
-  let likeness = 0;
-  if (word1.length !== word2.length) {
-    return 0;
-  }
-
-  for (let i = 0; i < word1.length; i++) {
-    if (word1[i] === word2[i]) {
-      likeness++;
-    }
-  }
-  return likeness;
-}
-function showAccessGranted() {
-  document.getElementById("access-granted").style.display = "block";
-}
-
-function showAccessDenied() {
-  document.getElementById("access-denied").style.display = "block";
-}
-
-function showAttemptsLeft(num) {
-  const attemptChar = "*";
-  const ac = document.getElementById("attempt-container");
-  ac.innerText = "";
-
-  for (let i = 0; i < num; i++) {
-    ac.innerText = ac.innerText + attemptChar;
-  }
-}
-function showMemoryAddresses(parentElement, startingNum, stepAmt, numRows) {
-  const ul = document.createElement("ul");
-  let currNum = startingNum;
-  for (let i = 0; i < numRows; i++) {
-    const li = document.createElement("li");
-    li.innerText = toHex(currNum);
-    currNum += stepAmt;
-    ul.appendChild(li);
-  }
-  parentElement.appendChild(ul);
-}
-
-function createMemoryDump(wordList, numRows, numCols) {
-  const wordLength = wordList.reduce((total, word) => total + word.length, 0);
-  if (wordLength > numRows * numCols) {
-    throw "There are more words than would fit into the number of rows x cols";
-  }
-
-  const mem = [];
-
-  // fill all the elements with garbage characters
-  for (let i = 0; i < numRows * numCols; i++) {
-    mem.push(specialChars[Math.floor(Math.random() * specialChars.length)]);
-  }
-
-  const gap = 2; // at least this many garbage characters before each password
-
-  // randomly place the words
-  wordList.forEach(word => {
-    let placed = false;
-
-    while (!placed) {
-      let start = Math.floor(Math.random() * numRows * numCols);
-
-      // check before this position so password doesn't start right after another
-      if (start !== gap) {
-        if (!specialChars.includes(mem[start - 1])) {
-          continue; // there is a password right before this spot
-        }
-      }
-
-      let freeSpots = 0;
-      for (let i = 0; i < word.length + gap && start + i < mem.length; i++) {
-        if (!specialChars.includes(mem[start + i])) {
-          break; // password is already here
-        } else {
-          freeSpots++;
-        }
-      }
-      if (freeSpots === word.length + gap) {
-        mem.splice(start, word.length, ...word.toUpperCase().split(""));
-        placed = true;
-      }
-    }
-  });
-  return mem.join("");
-}
-
-async function loadWords(numWords = 5, wordLength = 5) {
-  // use fetch to load the acual words from the api here
-  // return Promise.resolve(["dog", "cat", "bat", "rat", "hat"]);
-  try {
-    const apiUrl = `http://localhost:8000/words?count=${numWords}&length=${wordLength}`;
-
-    const response = await fetch(apiUrl);
-    const jsonWords = await response.json();
-    return jsonWords.words;
-  } catch (e) {
-    throw e;
-  }
-}
+  showMemoryAddresses,
+  createDebugDataDisplay,
+  showAttemptsLeft,
+  setStatusMessage,
+  showAccessDenied,
+  showAccessGranted
+} from "./ui";
 
 async function init() {
   const numRows = 16;
